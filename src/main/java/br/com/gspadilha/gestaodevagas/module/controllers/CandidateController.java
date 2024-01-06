@@ -16,16 +16,4 @@ public class CandidateController {
     @PostMapping("/")
     public void create(@Valid @RequestBody CandidateEntity candidateEntity) {
     }
-
-    @PostMapping("/")
-    public void read() {
-    }
-
-    @PostMapping("/")
-    public void update() {
-    }
-
-    @PostMapping("/")
-    public void delete() {
-    }
 }
