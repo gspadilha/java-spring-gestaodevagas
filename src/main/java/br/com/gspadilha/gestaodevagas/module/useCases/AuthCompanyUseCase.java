@@ -1,5 +1,9 @@
 package br.com.gspadilha.gestaodevagas.module.useCases;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.TemporalAmount;
+
 import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +49,7 @@ public class AuthCompanyUseCase {
 
         return JWT.create().withIssuer(issuer)
                 .withSubject(company.getId().toString())
+                .withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
                 .sign(algorithm);
     }
 }
