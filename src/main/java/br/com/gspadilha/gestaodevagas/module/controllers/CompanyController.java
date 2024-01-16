@@ -27,6 +27,5 @@ public class CompanyController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
 }

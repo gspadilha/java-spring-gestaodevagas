@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    List<String> routesPermitted = new ArrayList<>(Arrays.asList("/candidate/", "/company/"));
+    List<String> routesPermitted = new ArrayList<>(Arrays.asList("/candidate/", "/company/", "/auth/company/"));
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

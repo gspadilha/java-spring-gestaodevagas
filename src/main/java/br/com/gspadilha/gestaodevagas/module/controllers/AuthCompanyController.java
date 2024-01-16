@@ -3,29 +3,30 @@ package br.com.gspadilha.gestaodevagas.module.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.gspadilha.gestaodevagas.module.entities.CandidateEntity;
-import br.com.gspadilha.gestaodevagas.module.useCases.CreateCandidateUseCase;
+import br.com.gspadilha.gestaodevagas.module.dto.AuthCompanyDTO;
+import br.com.gspadilha.gestaodevagas.module.useCases.AuthCompanyUseCase;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/candidate")
-public class CandidateController {
+@RequestMapping("/auth")
+public class AuthCompanyController {
 
     @Autowired
-    private CreateCandidateUseCase createCandidateUseCase;
+    private AuthCompanyUseCase authCompanyUseCase;
 
-    @PostMapping("/")
-    public ResponseEntity<Object> create(@Valid @RequestBody CandidateEntity candidateEntity) {
+    @PostMapping("/company")
+    public ResponseEntity<Object> create(@Valid @RequestBody AuthCompanyDTO authCompanyDTO) {
         try {
-            var result = this.createCandidateUseCase.execute(candidateEntity);
+            var result = this.authCompanyUseCase.execute(authCompanyDTO);
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 }
