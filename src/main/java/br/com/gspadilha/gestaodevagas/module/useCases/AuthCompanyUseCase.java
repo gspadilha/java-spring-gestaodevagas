@@ -21,7 +21,7 @@ import br.com.gspadilha.gestaodevagas.module.repositories.CompanyRepository;
 @Service
 public class AuthCompanyUseCase {
 
-    @Value("${jwt.security.secret.token}")
+    @Value("${jwt.security.secret.token.candidate}")
     private String secretKey;
 
     @Value("${jwt.security.issuer}")

@@ -27,23 +27,25 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(null);
 
-        String authHeader = request.getHeader("Authorization");
+        if (request.getRequestURI().startsWith("/company")) {
+            String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null) {
-            var subjectToken = this.jwtProvider.validateToken(authHeader);
+            if (authHeader != null) {
+                var subjectToken = this.jwtProvider.validateToken(authHeader);
 
-            if (subjectToken.isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+                if (subjectToken.isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+
+                request.setAttribute("company_id", subjectToken);
+
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                        subjectToken,
+                        Collections.emptyList());
+
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
-
-            request.setAttribute("company_id", subjectToken);
-
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                    subjectToken,
-                    Collections.emptyList());
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         filterChain.doFilter(request, response);
