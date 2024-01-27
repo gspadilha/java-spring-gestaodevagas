@@ -55,7 +55,7 @@ public class AuthCandidateUseCase {
                 .withIssuer(issuer)
                 .withSubject(candidate.getId().toString())
                 .withExpiresAt(expiresIn)
-                .withClaim("role", Arrays.asList("candidate"))
+                .withClaim("role", Arrays.asList("CANDIDATE"))
                 .sign(algorithm);
 
         return AuthCandidateResponseDTO.builder()
