@@ -2,7 +2,7 @@ package br.com.gspadilha.gestaodevagas.module.useCases;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.TemporalAmount;
+import java.util.Arrays;
 
 import javax.naming.AuthenticationException;
 
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
+import br.com.gspadilha.gestaodevagas.module.dto.AuthCandidateResponseDTO;
 import br.com.gspadilha.gestaodevagas.module.dto.AuthCompanyDTO;
 import br.com.gspadilha.gestaodevagas.module.repositories.CompanyRepository;
 
@@ -33,7 +34,7 @@ public class AuthCompanyUseCase {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public String execute(AuthCompanyDTO authCompanyDTO) throws AuthenticationException {
+    public AuthCandidateResponseDTO execute(AuthCompanyDTO authCompanyDTO) throws AuthenticationException {
         var company = this.companyRepository.findByUsername(authCompanyDTO.getUsername()).orElseThrow(
                 () -> {
                     throw new UsernameNotFoundException("User from company not found");
@@ -47,9 +48,18 @@ public class AuthCompanyUseCase {
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
-        return JWT.create().withIssuer(issuer)
+        var expiresIn = Instant.now().plus(Duration.ofHours(2));
+
+        var token = JWT.create()
+                .withIssuer(issuer)
                 .withSubject(company.getId().toString())
-                .withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
+                .withExpiresAt(expiresIn)
+                .withClaim("roles", Arrays.asList("COMPANY"))
                 .sign(algorithm);
+
+        return AuthCandidateResponseDTO.builder()
+                .access_token(token)
+                .expires_in(expiresIn.toEpochMilli())
+                .build();
     }
 }
