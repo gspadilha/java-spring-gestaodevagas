@@ -19,7 +19,8 @@ public class SecurityConfig {
     @Autowired
     private SecurityFilter securityFilter;
 
-    List<String> routesPermitted = new ArrayList<>(Arrays.asList("/candidate/", "/company/", "/auth/company/"));
+    List<String> routesPermitted = new ArrayList<>(
+            Arrays.asList("/candidate/", "/company/", "/company/auth", "/candidate/auth"));
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -28,6 +29,7 @@ public class SecurityConfig {
                     for (String route : routesPermitted) {
                         auth.requestMatchers(route).permitAll();
                     }
+
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, BasicAuthenticationFilter.class);
