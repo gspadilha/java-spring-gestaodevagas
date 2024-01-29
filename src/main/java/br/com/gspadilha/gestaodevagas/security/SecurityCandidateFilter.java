@@ -27,33 +27,41 @@ public class SecurityCandidateFilter extends OncePerRequestFilter {
 
         // SecurityContextHolder.getContext().setAuthentication(null);
 
-        if (request.getRequestURI().startsWith("/candidate")) {
-            String header = request.getHeader("Authorization");
-
-            if (header != null) {
-                var token = this.jwtCandidateProvider.validateToken(header);
-
-                if (token == null) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    return;
-                }
-
-                request.setAttribute("candidate_id", token.getSubject());
-
-                var roles = token.getClaim("roles").asList(Object.class);
-
-                var grants = roles.stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase()))
-                        .toList();
-
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        token.getSubject(),
-                        grants);
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
-        }
+        this.checkValidity(request, response);
 
         filterChain.doFilter(request, response);
+    }
+
+    private void checkValidity(HttpServletRequest request, HttpServletResponse response) {
+        if (!request.getRequestURI().startsWith("/candidate")) {
+            return;
+        }
+
+        String header = request.getHeader("Authorization");
+
+        if (header == null) {
+            return;
+        }
+
+        var token = this.jwtCandidateProvider.validateToken(header);
+
+        if (token == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        request.setAttribute("candidate_id", token.getSubject());
+
+        var roles = token.getClaim("roles").asList(Object.class);
+
+        var grants = roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase()))
+                .toList();
+
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                token.getSubject(),
+                grants);
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }
