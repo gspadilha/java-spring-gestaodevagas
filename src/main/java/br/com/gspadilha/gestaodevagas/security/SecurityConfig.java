@@ -26,6 +26,7 @@ public class SecurityConfig {
 
     List<String> routesPermitted = new ArrayList<>(
             Arrays.asList(
+                    "/test/",
                     "/candidate/", "/candidate/auth",
                     "/company/", "/company/auth"));
 
